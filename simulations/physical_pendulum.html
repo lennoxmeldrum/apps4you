@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f8f9fa">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script>
+    (function() {
+      if (localStorage.getItem('physical-pendulum-dark')) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        var tc = document.querySelector('meta[name="theme-color"]');
+        var sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+        if (tc) tc.setAttribute('content', '#0f1014');
+        if (sb) sb.setAttribute('content', 'black-translucent');
+      }
+    })();
+    </script>
+    <title>Physical Pendulum Explorer</title>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <script src="/assets/sw-register.js" defer></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Poppins:wght@600;700;800&display=swap');
+
+        :root {
+            --font-sans: 'Inter', sans-serif;
+            --font-display: 'Poppins', 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --bg-color: #f8f9fa;
+            --bg-pattern: #e9ecef;
+            --text-main: #2d3436;
+            --text-secondary: #636e72;
+
+            --brand-primary: #6c5ce7;
+            --brand-secondary: #a29bfe;
+            --brand-accent: #00cec9;
+
+            --card-bg: #ffffff;
+            --card-border: #e9ecef;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+            --canvas-bg: #ffffff;
+
+            --slider-track: #e2e8f0;
+            --slider-thumb: #6c5ce7;
+
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --header-border: rgba(108, 92, 231, 0.1);
+
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --nav-border: rgba(255, 255, 255, 0.5);
+
+            --rod-fill: #e7e5e4;
+            --rod-stroke: #a8a29e;
+            --pivot-color: #6c5ce7;
+            --cm-fill: #ffffff;
+            --cm-stroke: #2d3436;
+            --cm-quarter: #2d3436;
+            --grid-line: rgba(0, 0, 0, 0.04);
+            --arc-color: rgba(0, 0, 0, 0.03);
+            --tooltip-color: #636e72;
+            --simple-bob: #00cec9;
+
+            --readout-bg: #f8f9fa;
+            --readout-border: #e9ecef;
+            --readout-label: #636e72;
+            --readout-value: #2d3436;
+            --readout-unit: #636e72;
+
+            --info-bg: #fef3c7;
+            --info-border: #fcd34d;
+            --info-title: #92400e;
+            --info-text: #78350f;
+
+            --ap-bg: rgba(108, 92, 231, 0.06);
+            --ap-border: rgba(108, 92, 231, 0.15);
+            --ap-label: #4c1d95;
+
+            --section-heading: #6c5ce7;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f1014;
+            --bg-pattern: #181a20;
+            --text-main: #dfe6e9;
+            --text-secondary: #b2bec3;
+
+            --brand-primary: #a29bfe;
+            --brand-secondary: #6c5ce7;
+            --brand-accent: #81ecec;
+
+            --card-bg: #1e2129;
+            --card-border: #2d3436;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+            --canvas-bg: #16181d;
+
+            --slider-track: #4a5568;
+            --slider-thumb: #a29bfe;
+
+            --header-bg: rgba(30, 33, 41, 0.95);
+            --header-border: rgba(162, 155, 254, 0.1);
+
+            --nav-bg: rgba(22, 24, 29, 0.85);
+            --nav-border: rgba(255, 255, 255, 0.08);
+
+            --rod-fill: #3d3d3d;
+            --rod-stroke: #6b6b6b;
+            --pivot-color: #a29bfe;
+            --cm-fill: #2d3436;
+            --cm-stroke: #dfe6e9;
+            --cm-quarter: #dfe6e9;
+            --grid-line: rgba(255, 255, 255, 0.04);
+            --arc-color: rgba(255, 255, 255, 0.04);
+            --tooltip-color: #b2bec3;
+            --simple-bob: #81ecec;
+
+            --readout-bg: #16181d;
+            --readout-border: #2d3436;
+            --readout-label: #b2bec3;
+            --readout-value: #dfe6e9;
+            --readout-unit: #b2bec3;
+
+            --info-bg: rgba(251, 191, 36, 0.08);
+            --info-border: rgba(251, 191, 36, 0.25);
+            --info-title: #fbbf24;
+            --info-text: #fcd34d;
+
+            --ap-bg: rgba(162, 155, 254, 0.08);
+            --ap-border: rgba(162, 155, 254, 0.2);
+            --ap-label: #c4b5fd;
+
+            --section-heading: #a29bfe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .offline-font {
+            --font-sans: 'Inter', 'Poppins', sans-serif;
+            --font-display: 'Poppins', 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            background-image: radial-gradient(var(--bg-pattern) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* Banner Header */
+        header.banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 8px 20px;
+            margin: 16px auto 0;
+            width: calc(100% - 40px);
+            max-width: 1160px;
+            background: var(--nav-bg);
+            border: 1px solid var(--nav-border);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .banner-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .banner-logo img {
+            height: 36px;
+            width: auto;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        .banner-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.5px;
+            color: var(--brand-primary);
+        }
+
+        .banner-title.gradient-text {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .banner-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            min-width: 42px;
+            min-height: 42px;
+            line-height: 1;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .theme-toggle button:hover {
+            background-color: rgba(108, 92, 231, 0.15);
+            transform: rotate(15deg);
+        }
+
+        /* Main Layout */
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 960px) {
+            .main-content {
+                grid-template-columns: 7fr 5fr;
+            }
+        }
+
+        .left-column { display: flex; flex-direction: column; gap: 20px; }
+        .right-column { display: flex; flex-direction: column; gap: 20px; }
+
+        /* Simulation Canvas Card */
+        .simulation-area {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            padding: 12px;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: none;
+            border-radius: 12px;
+            background: var(--canvas-bg);
+        }
+
+        .canvas-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .canvas-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            opacity: 0.75;
+        }
+
+        .canvas-btn:hover { opacity: 1; transform: scale(1.1); }
+        .canvas-btn:active { transform: scale(0.95); }
+
+        .canvas-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Controls Panel */
+        .controls-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            padding: 24px;
+        }
+
+        .controls-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .controls-title svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--brand-primary);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Slider Control */
+        .slider-group {
+            background: var(--readout-bg);
+            border: 1px solid var(--readout-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .slider-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .slider-value-pill {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+        }
+
+        .slider-range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: transparent;
+            outline: none;
+            border: none;
+            padding: 3px 0;
+            margin-top: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: var(--slider-track);
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: var(--slider-track);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--slider-thumb);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            margin-top: -6px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--slider-thumb);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Toggle */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--readout-bg);
+            border: 1px solid var(--readout-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: background-color 0.15s ease;
+        }
+
+        .toggle-row:hover { background: var(--card-border); }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: var(--slider-track);
+            border-radius: 24px;
+            transition: background-color 0.2s ease;
+        }
+
+        .toggle-track::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-track {
+            background: var(--brand-primary);
+        }
+
+        .toggle-switch input:checked + .toggle-track::before {
+            transform: translateX(20px);
+        }
+
+        /* Divider */
+        .controls-divider {
+            border: none;
+            border-top: 1px solid var(--card-border);
+            margin: 16px 0;
+        }
+
+        /* Readouts */
+        .readouts-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .readouts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .readout-card {
+            background: var(--readout-bg);
+            border: 1px solid var(--readout-border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .readout-card-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--readout-label);
+            margin-bottom: 4px;
+        }
+
+        .readout-card-value {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--readout-value);
+            letter-spacing: -0.02em;
+        }
+
+        .readout-card-unit {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--readout-unit);
+            margin-left: 2px;
+        }
+
+        /* Educational Content */
+        .education-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            padding: 28px;
+        }
+
+        .education-card h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 24px;
+        }
+
+        .education-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--section-heading);
+            margin-bottom: 8px;
+        }
+
+        .education-card p {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .education-card strong { color: var(--text-main); }
+
+        .education-card .formula-box {
+            background: var(--readout-bg);
+            border: 1px solid var(--readout-border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .education-card ul {
+            list-style: disc;
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .education-card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .education-card li strong { color: var(--text-main); }
+
+        .info-box {
+            background: var(--info-bg);
+            border: 1px solid var(--info-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-box-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--info-title);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-box-title svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .info-box p {
+            font-size: 0.85rem;
+            color: var(--info-text);
+            margin-bottom: 0;
+        }
+
+        .ap-box {
+            background: var(--ap-bg);
+            border: 1px solid var(--ap-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .ap-box .ap-item {
+            margin-bottom: 12px;
+        }
+
+        .ap-box .ap-item:last-child { margin-bottom: 0; }
+
+        .ap-box .ap-item-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--ap-label);
+            margin-bottom: 2px;
+        }
+
+        .ap-box .ap-item-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .education-section { margin-bottom: 24px; }
+        .education-section:last-child { margin-bottom: 0; }
+
+        .education-divider {
+            border: none;
+            border-top: 1px solid var(--card-border);
+            margin: 20px 0;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            header.banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .banner-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .banner-title { font-size: 1.2rem; }
+        }
+
+        @media (max-width: 600px) {
+            header.banner { padding: 8px 12px; }
+            .banner-logo img { height: 28px; }
+            .banner-title { font-size: 1rem; }
+            .main-content { padding: 12px; }
+        }
+
+        @media (pointer: coarse) {
+            .canvas-btn {
+                width: 48px;
+                height: 48px;
+                touch-action: manipulation;
+            }
+
+            .theme-toggle button {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            input[type="range"] {
+                padding: 19px 0;
+                touch-action: manipulation;
+            }
+
+            input[type="range"]::-webkit-slider-runnable-track { height: 6px; }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+                margin-top: -11px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 28px;
+                height: 28px;
+            }
+
+            canvas { touch-action: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="banner">
+        <div class="banner-logo">
+            <a href="https://panphy.github.io/">
+                <img src="/assets/panphy.png" alt="PanPhy logo">
+            </a>
+        </div>
+        <div class="banner-title">Physical Pendulum</div>
+        <div class="banner-actions">
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle Light/Dark Theme" title="Toggle between light and dark themes">&#9728;&#65039;</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="left-column">
+            <!-- Canvas -->
+            <div class="simulation-area">
+                <canvas id="simCanvas"></canvas>
+                <div class="canvas-controls">
+                    <button class="canvas-btn" id="playPauseBtn" aria-label="Play / Pause" title="Play / Pause (Space)">
+                        <svg id="pauseIcon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>
+                        <svg id="playIcon" viewBox="0 0 24 24" style="display:none"><polygon points="6,4 20,12 6,20" fill="currentColor" stroke="none"/></svg>
+                    </button>
+                    <button class="canvas-btn" id="resetBtn" aria-label="Reset" title="Reset simulation">
+                        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Educational Content -->
+            <div class="education-card">
+                <h2>The Physics of Pendulums</h2>
+
+                <div class="education-section">
+                    <h3>Physical vs. Simple Pendulum</h3>
+                    <p>A <strong>simple pendulum</strong> assumes all mass is concentrated at a single point at the end of a massless string. A <strong>physical pendulum</strong> is any real rigid body that oscillates about a fixed axis. Because its mass is distributed across its shape, we must account for its rotational inertia (<em>I</em>).</p>
+                </div>
+
+                <div class="education-section">
+                    <h3>The Period of Oscillation</h3>
+                    <p>For small angles, the period <em>T</em> of a physical pendulum is given by:</p>
+                    <div class="formula-box">T = 2&pi; &radic;(I / mgd)</div>
+                    <ul>
+                        <li><strong>I</strong> = Rotational inertia about the pivot</li>
+                        <li><strong>m</strong> = Total mass</li>
+                        <li><strong>d</strong> = Distance from the pivot to the Centre of Mass (CM)</li>
+                    </ul>
+                </div>
+
+                <div class="education-section">
+                    <h3>The Parallel Axis Theorem</h3>
+                    <p>To find <em>I</em> about any pivot, we use the parallel axis theorem: <em>I = I<sub>cm</sub> + md&sup2;</em>. For a uniform rod of length <em>L</em>, <em>I<sub>cm</sub> = 1/12 mL&sup2;</em>. Notice how <em>I</em> changes as you move the pivot!</p>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-title">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Fun Fact: The Minimum Period
+                    </div>
+                    <p>As you move the pivot from the end towards the centre, the period actually <strong>decreases</strong> at first! It reaches a minimum when <em>d = L/&radic;12 &asymp; 0.289L</em>. Only after passing this point does the period start increasing towards infinity. Try finding the minimum period!</p>
+                </div>
+
+                <div class="education-section">
+                    <h3>The Counter-Intuitive Centre</h3>
+                    <p>Try dragging the pivot exactly to the Centre of Mass (<em>d = 0</em>). The restoring torque (<em>&tau; = &minus;mgd sin&theta;</em>) becomes zero because gravity pulls directly on the pivot, creating no leverage. However, the rotational inertia <em>I</em> is still <em>1/12 mL&sup2;</em>. With inertia but no restoring force, the period becomes infinite &mdash; it doesn't swing!</p>
+                </div>
+
+                <div class="education-section">
+                    <h3>Equivalent Simple Pendulum</h3>
+                    <p>Every physical pendulum has a corresponding simple pendulum that swings with the exact same period. By equating their period formulas, we find the equivalent length:</p>
+                    <div class="formula-box">L<sub>eq</sub> = I / md</div>
+                    <p>Toggle "Show Equivalent Simple Pendulum" to see this in action. Notice how <em>L<sub>eq</sub></em> gets extremely long as the pivot approaches the CM!</p>
+                </div>
+
+                <hr class="education-divider">
+
+                <div class="education-section">
+                    <h3>AP Physics C: Mechanics (Topic 7.5)</h3>
+                    <div class="ap-box">
+                        <div class="ap-item">
+                            <div class="ap-item-label">Newton's Second Law (Rotational):</div>
+                            <div class="ap-item-text"><em>&tau; = I&alpha;</em></div>
+                        </div>
+                        <div class="ap-item">
+                            <div class="ap-item-label">Restoring Torque:</div>
+                            <div class="ap-item-text">When displaced, gravity exerts a torque: <em>&tau; = &minus;mgd sin&theta;</em></div>
+                        </div>
+                        <div class="ap-item">
+                            <div class="ap-item-label">Small-Angle Approximation:</div>
+                            <div class="ap-item-text">For small <em>&theta;</em>, <em>sin&theta; &asymp; &theta;</em>, so <em>&tau; &asymp; &minus;mgd&theta;</em></div>
+                        </div>
+                        <div class="ap-item">
+                            <div class="ap-item-label">Differential Equation for SHM:</div>
+                            <div class="ap-item-text">Combining these gives <em>&minus;mgd&theta; = I (d&sup2;&theta;/dt&sup2;)</em>, which simplifies to <em>d&sup2;&theta;/dt&sup2; = &minus;&omega;&sup2;&theta;</em>, the hallmark of Simple Harmonic Motion.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="controls-card">
+                <div class="controls-title">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Simulation Controls
+                </div>
+
+                <!-- Pivot Slider -->
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Pivot Position</span>
+                        <span class="slider-value-pill" id="pivotDisplay">-0.400 m</span>
+                    </div>
+                    <input type="range" id="pivotSlider" min="-0.500" max="0.000" step="0.001" value="-0.400" aria-label="Pivot position along rod">
+                    <div class="slider-range-labels">
+                        <span>Top (&minus;0.5)</span>
+                        <span>Centre (0.0)</span>
+                    </div>
+                </div>
+
+                <hr class="controls-divider">
+
+                <!-- Toggle Simple Pendulum -->
+                <label class="toggle-row" id="simpleToggleRow">
+                    <span class="toggle-label">Show Equivalent Simple Pendulum</span>
+                    <span class="toggle-switch">
+                        <input type="checkbox" id="showSimpleToggle">
+                        <span class="toggle-track"></span>
+                    </span>
+                </label>
+
+                <hr class="controls-divider">
+
+                <!-- Readouts -->
+                <div class="readouts-label">Real-time Readouts</div>
+                <div class="readouts-grid">
+                    <div class="readout-card">
+                        <div class="readout-card-label">Distance to CM (d)</div>
+                        <div><span class="readout-card-value" id="readoutD">0.400</span><span class="readout-card-unit">m</span></div>
+                    </div>
+                    <div class="readout-card">
+                        <div class="readout-card-label">Rot. Inertia (I)</div>
+                        <div><span class="readout-card-value" id="readoutI">0.243</span><span class="readout-card-unit">kg&middot;m&sup2;</span></div>
+                    </div>
+                    <div class="readout-card">
+                        <div class="readout-card-label">Period (T)</div>
+                        <div><span class="readout-card-value" id="readoutT">1.567</span><span class="readout-card-unit">s</span></div>
+                    </div>
+                    <div class="readout-card">
+                        <div class="readout-card-label">Eq. Length (L<sub>eq</sub>)</div>
+                        <div><span class="readout-card-value" id="readoutLeq">0.608</span><span class="readout-card-unit">m</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; <a href="/">PanPhy Labs</a> |
+        <a href="https://buymeacoffee.com/panphy" target="_blank" rel="noopener noreferrer">Support My Projects</a>
+    </footer>
+
+    <script>
+        // ===== Theme Toggle =====
+        const themeButton = document.getElementById('theme-button');
+        const DARK_THEME_KEY = 'physical-pendulum-dark';
+        const LIGHT_THEME_KEY = 'physical-pendulum-light';
+
+        const currentTheme = localStorage.getItem(DARK_THEME_KEY)
+            ? 'dark'
+            : localStorage.getItem(LIGHT_THEME_KEY)
+                ? 'light'
+                : 'light';
+
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateAppChromeTheme(currentTheme);
+        updateButtonEmoji(currentTheme);
+
+        function updateAppChromeTheme(theme) {
+            const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+            const appleStatusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+            const isDark = theme === 'dark';
+            if (themeColorMeta) themeColorMeta.setAttribute('content', isDark ? '#0f1014' : '#f8f9fa');
+            if (appleStatusBarMeta) appleStatusBarMeta.setAttribute('content', isDark ? 'black-translucent' : 'default');
+        }
+
+        window.addEventListener('pageshow', function() {
+            updateAppChromeTheme(document.documentElement.getAttribute('data-theme'));
+        });
+
+        function updateButtonEmoji(theme) {
+            themeButton.textContent = theme === 'dark' ? '\u{1F319}' : '\u{2600}\u{FE0F}';
+        }
+
+        themeButton.addEventListener('click', function() {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem(DARK_THEME_KEY, 'true');
+                localStorage.removeItem(LIGHT_THEME_KEY);
+                updateAppChromeTheme('dark');
+                updateButtonEmoji('dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem(LIGHT_THEME_KEY, 'true');
+                localStorage.removeItem(DARK_THEME_KEY);
+                updateAppChromeTheme('light');
+                updateButtonEmoji('light');
+            }
+        });
+
+        // Offline font fallback
+        function updateOfflineFontState() {
+            document.documentElement.classList.toggle('offline-font', !navigator.onLine);
+        }
+        window.addEventListener('online', updateOfflineFontState);
+        window.addEventListener('offline', updateOfflineFontState);
+        updateOfflineFontState();
+
+        // ===== Physics Constants =====
+        const ROD_LENGTH = 1.0;   // metres
+        const GRAVITY = 9.81;     // m/s^2
+        const THETA_0 = 0.25;     // initial angle (rad)
+        const MASS = 1.0;         // kg
+
+        // ===== State =====
+        let pivotPos = -0.4;
+        let isPlaying = true;
+        let showSimple = false;
+        let phase = 0;
+        let previousTime = null;
+        let isDragging = false;
+        let isHoveringPivot = false;
+        let dragStart = null;
+
+        // ===== DOM Elements =====
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const playIcon = document.getElementById('playIcon');
+        const resetBtn = document.getElementById('resetBtn');
+        const pivotSlider = document.getElementById('pivotSlider');
+        const pivotDisplay = document.getElementById('pivotDisplay');
+        const showSimpleToggle = document.getElementById('showSimpleToggle');
+
+        const readoutD = document.getElementById('readoutD');
+        const readoutI = document.getElementById('readoutI');
+        const readoutT = document.getElementById('readoutT');
+        const readoutLeq = document.getElementById('readoutLeq');
+
+        // ===== Canvas Setup =====
+        let canvasWidth = 0;
+        let canvasHeight = 0;
+
+        function resizeCanvas() {
+            const aspectRatio = 4 / 3;
+            const width = canvas.clientWidth;
+            const height = width / aspectRatio;
+            const dpr = window.devicePixelRatio || 1;
+            canvasWidth = width;
+            canvasHeight = height;
+            canvas.style.height = height + 'px';
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', function() { resizeCanvas(); });
+
+        // ===== Drawing Helpers =====
+        function getCSSVar(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        function drawCM(x, y, radius) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fillStyle = getCSSVar('--cm-fill');
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = getCSSVar('--cm-stroke');
+            ctx.stroke();
+
+            ctx.fillStyle = getCSSVar('--cm-quarter');
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, radius, 0, Math.PI / 2);
+            ctx.lineTo(0, 0);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, radius, Math.PI, Math.PI * 1.5);
+            ctx.lineTo(0, 0);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // ===== Main Render =====
+        function render(time) {
+            if (previousTime !== null) {
+                const deltaTime = Math.min((time - previousTime) / 1000, 0.1);
+
+                const d = Math.abs(pivotPos);
+                const I = (1 / 12) * ROD_LENGTH * ROD_LENGTH + d * d;
+                let omega = 0;
+                if (d > 0.0001) {
+                    omega = Math.sqrt((GRAVITY * d) / I);
+                }
+
+                if (isPlaying) {
+                    phase += omega * deltaTime;
+                }
+
+                const theta = THETA_0 * Math.cos(phase);
+
+                // Clear
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                // Grid
+                const gridColor = getCSSVar('--grid-line');
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth = 1;
+                for (let gx = 0; gx < canvasWidth; gx += 40) {
+                    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvasHeight); ctx.stroke();
+                }
+                for (let gy = 0; gy < canvasHeight; gy += 40) {
+                    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(canvasWidth, gy); ctx.stroke();
+                }
+
+                const scale = Math.min(canvasHeight * 0.55, canvasWidth * 0.35);
+                const pivotY = canvasHeight * 0.2;
+                const physCx = showSimple ? canvasWidth / 2 - canvasWidth * 0.15 : canvasWidth / 2;
+
+                // Swing arc
+                ctx.beginPath();
+                ctx.arc(physCx, pivotY, ROD_LENGTH * scale * 0.8, Math.PI / 2 - THETA_0, Math.PI / 2 + THETA_0);
+                ctx.strokeStyle = getCSSVar('--arc-color');
+                ctx.lineWidth = 20;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(physCx, pivotY);
+                ctx.rotate(theta);
+
+                // Rod
+                const rodWidth = Math.max(18, scale * 0.07);
+                const rodLengthPx = ROD_LENGTH * scale;
+                const pivotOffsetPx = pivotPos * scale;
+                const topY = -pivotOffsetPx - rodLengthPx / 2;
+                const rodRadius = Math.min(8, rodWidth / 3);
+
+                ctx.shadowColor = 'rgba(0,0,0,0.12)';
+                ctx.shadowBlur = 12;
+                ctx.shadowOffsetY = 8;
+
+                ctx.fillStyle = getCSSVar('--rod-fill');
+                ctx.strokeStyle = getCSSVar('--rod-stroke');
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(-rodWidth / 2, topY, rodWidth, rodLengthPx, rodRadius);
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+                ctx.stroke();
+
+                // CM marker
+                drawCM(0, -pivotOffsetPx, Math.max(6, scale * 0.025));
+
+                // Pivot hole on rod
+                ctx.fillStyle = getCSSVar('--canvas-bg');
+                ctx.beginPath();
+                ctx.arc(0, 0, Math.max(4, scale * 0.018), 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = getCSSVar('--rod-stroke');
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.restore();
+
+                // Pivot marker (world space)
+                ctx.fillStyle = getCSSVar('--pivot-color');
+                ctx.beginPath();
+                ctx.arc(physCx, pivotY, Math.max(6, scale * 0.024), 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Equivalent Simple Pendulum
+                if (showSimple) {
+                    const simpCx = canvasWidth / 2 + canvasWidth * 0.15;
+                    let L_eq = 0;
+                    if (d > 0.0001) {
+                        L_eq = I / d;
+                    }
+
+                    if (L_eq > 0 && L_eq < 2) {
+                        // Swing arc
+                        ctx.beginPath();
+                        ctx.arc(simpCx, pivotY, L_eq * scale, Math.PI / 2 - THETA_0, Math.PI / 2 + THETA_0);
+                        ctx.strokeStyle = getCSSVar('--arc-color');
+                        ctx.lineWidth = 20;
+                        ctx.stroke();
+
+                        ctx.save();
+                        ctx.translate(simpCx, pivotY);
+                        ctx.rotate(theta);
+
+                        const leqPx = L_eq * scale;
+
+                        // String
+                        ctx.strokeStyle = getCSSVar('--rod-stroke');
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(0, leqPx);
+                        ctx.stroke();
+
+                        // Bob
+                        ctx.shadowColor = 'rgba(0,0,0,0.12)';
+                        ctx.shadowBlur = 8;
+                        ctx.shadowOffsetY = 4;
+                        ctx.fillStyle = getCSSVar('--simple-bob');
+                        ctx.beginPath();
+                        ctx.arc(0, leqPx, Math.max(12, scale * 0.045), 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowColor = 'transparent';
+                        ctx.strokeStyle = 'white';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        ctx.restore();
+
+                        // Pivot for simple
+                        ctx.fillStyle = getCSSVar('--pivot-color');
+                        ctx.beginPath();
+                        ctx.arc(simpCx, pivotY, Math.max(6, scale * 0.024), 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = 'white';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Labels
+                        ctx.font = '600 ' + Math.max(11, scale * 0.04) + 'px ' + getCSSVar('--font-sans');
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = getCSSVar('--text-secondary');
+                        ctx.fillText('Physical', physCx, canvasHeight - 12);
+                        ctx.fillText('Equivalent Simple', simpCx, canvasHeight - 12);
+                    }
+                }
+
+                // Tooltip at top
+                ctx.fillStyle = getCSSVar('--tooltip-color');
+                ctx.font = Math.max(11, scale * 0.04) + 'px ' + getCSSVar('--font-sans');
+                ctx.textAlign = 'center';
+                ctx.fillText('Drag the blue pivot point along the rod', canvasWidth / 2, Math.max(20, pivotY - scale * 0.2));
+            }
+            previousTime = time;
+            if (isPlaying) {
+                requestAnimationFrame(render);
+            } else {
+                // Still render once to show static frame
+                requestAnimationFrame(function(t) {
+                    previousTime = t;
+                });
+            }
+        }
+
+        requestAnimationFrame(render);
+
+        // ===== Pointer Handlers (canvas drag) =====
+        canvas.addEventListener('pointerdown', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvasWidth / rect.width;
+            const scaleY = canvasHeight / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            const physCx = showSimple ? canvasWidth / 2 - canvasWidth * 0.15 : canvasWidth / 2;
+            const pivotY = canvasHeight * 0.2;
+
+            const dist = Math.hypot(x - physCx, y - pivotY);
+            if (dist < 40) {
+                dragStart = { y: e.clientY, pivotPos: pivotPos };
+                isDragging = true;
+                canvas.setPointerCapture(e.pointerId);
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('pointermove', function(e) {
+            if (isDragging && dragStart) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleY = canvasHeight / rect.height;
+                const scale = Math.min(canvasHeight * 0.55, canvasWidth * 0.35);
+                const deltaY = e.clientY - dragStart.y;
+                const deltaPos = deltaY / (scale / scaleY);
+                let newPos = dragStart.pivotPos + deltaPos;
+                newPos = Math.max(-0.5, Math.min(0.0, newPos));
+                pivotPos = newPos;
+                pivotSlider.value = pivotPos.toFixed(3);
+                updateReadouts();
+                if (!isPlaying) requestAnimationFrame(render);
+            } else {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvasWidth / rect.width;
+                const scaleY = canvasHeight / rect.height;
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top) * scaleY;
+                const physCx = showSimple ? canvasWidth / 2 - canvasWidth * 0.15 : canvasWidth / 2;
+                const pivotY = canvasHeight * 0.2;
+                const dist = Math.hypot(x - physCx, y - pivotY);
+                const hovering = dist < 40;
+                if (hovering !== isHoveringPivot) {
+                    isHoveringPivot = hovering;
+                    canvas.style.cursor = isDragging ? 'grabbing' : hovering ? 'grab' : 'default';
+                }
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('pointerup', function() {
+            isDragging = false;
+            dragStart = null;
+            canvas.style.cursor = isHoveringPivot ? 'grab' : 'default';
+        });
+
+        canvas.addEventListener('pointerleave', function() {
+            isDragging = false;
+            dragStart = null;
+            isHoveringPivot = false;
+            canvas.style.cursor = 'default';
+        });
+
+        // ===== Controls =====
+        pivotSlider.addEventListener('input', function() {
+            pivotPos = parseFloat(pivotSlider.value);
+            updateReadouts();
+            if (!isPlaying) requestAnimationFrame(render);
+        });
+
+        showSimpleToggle.addEventListener('change', function() {
+            showSimple = showSimpleToggle.checked;
+            if (!isPlaying) requestAnimationFrame(render);
+        });
+
+        playPauseBtn.addEventListener('click', function() {
+            isPlaying = !isPlaying;
+            syncPlayPause();
+            if (isPlaying) {
+                previousTime = null;
+                requestAnimationFrame(render);
+            }
+        });
+
+        resetBtn.addEventListener('click', function() {
+            pivotPos = -0.4;
+            phase = 0;
+            pivotSlider.value = '-0.400';
+            updateReadouts();
+            if (!isPlaying) {
+                previousTime = null;
+                requestAnimationFrame(render);
+            }
+        });
+
+        function syncPlayPause() {
+            pauseIcon.style.display = isPlaying ? '' : 'none';
+            playIcon.style.display = isPlaying ? 'none' : '';
+            playPauseBtn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+        }
+
+        // Spacebar toggle
+        window.addEventListener('keydown', function(e) {
+            if (e.target instanceof HTMLElement) {
+                var tag = e.target.tagName;
+                if (e.target.isContentEditable || tag === 'INPUT' || tag === 'BUTTON' || tag === 'LABEL') return;
+            }
+            if (e.code === 'Space' || e.key === ' ') {
+                e.preventDefault();
+                isPlaying = !isPlaying;
+                syncPlayPause();
+                if (isPlaying) {
+                    previousTime = null;
+                    requestAnimationFrame(render);
+                }
+            }
+        });
+
+        // ===== Readouts =====
+        function updateReadouts() {
+            const d = Math.abs(pivotPos);
+            const I_cm = (1 / 12) * MASS * ROD_LENGTH * ROD_LENGTH;
+            const I = I_cm + MASS * d * d;
+            const T = d > 0.001 ? 2 * Math.PI * Math.sqrt(I / (MASS * GRAVITY * d)) : Infinity;
+            const L_eq = d > 0.001 ? I / (MASS * d) : Infinity;
+
+            pivotDisplay.textContent = pivotPos.toFixed(3) + ' m';
+            readoutD.textContent = d.toFixed(3);
+            readoutI.textContent = I.toFixed(3);
+            readoutT.textContent = T === Infinity ? '\u221E' : T.toFixed(3);
+            readoutLeq.textContent = L_eq === Infinity ? '\u221E' : L_eq.toFixed(3);
+        }
+
+        updateReadouts();
+    </script>
+    <script>
+        // Gradient text: skip on Brave iOS where background-clip:text is broken
+        (function() {
+            if (/iP(hone|ad|od)/.test(navigator.userAgent) && navigator.brave) return;
+            document.querySelectorAll('.banner-title').forEach(function(el) { el.classList.add('gradient-text'); });
+        })();
+    </script>
+</body>
+
+</html>
