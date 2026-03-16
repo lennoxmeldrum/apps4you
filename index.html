@@ -20,15 +20,15 @@
       }
     })();
     </script>
-    <title>Physics Tools & Simulations</title>
+    <title>ExplAIn Sims</title>
     <meta name="description"
-        content="A collection of physics tools, simulations, and interactive mini apps.">
-    <meta property="og:title" content="Physics Tools & Simulations">
+        content="Interactive physics simulations, tools, and educational games for teachers and students.">
+    <meta property="og:title" content="ExplAIn Sims">
     <meta property="og:description"
-        content="A collection of physics tools, simulations, and interactive mini apps.">
-    <meta name="twitter:title" content="Physics Tools & Simulations">
+        content="Interactive physics simulations, tools, and educational games for teachers and students.">
+    <meta name="twitter:title" content="ExplAIn Sims">
     <meta name="twitter:description"
-        content="A collection of physics tools, simulations, and interactive mini apps.">
+        content="Interactive physics simulations, tools, and educational games for teachers and students.">
 
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -263,29 +263,42 @@
         }
 
         .logo {
-            height: 72px;
+            height: 96px;
             width: auto;
             margin-bottom: 1.5rem;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.12));
             animation: heroFadeUp 0.8s ease-out both;
+            border-radius: 22%;
         }
 
         header h1 {
-            font-family: var(--font-display);
+            font-family: var(--font-sans);
             font-size: 4.5rem;
-            font-weight: 400;
+            font-weight: 800;
             margin: 0;
-            letter-spacing: -0.02em;
-            color: var(--brand-primary);
+            letter-spacing: -0.03em;
+            color: var(--text-main);
             line-height: 1.1;
             animation: heroFadeUp 0.8s ease-out 0.12s both;
         }
 
-        header h1.gradient-text {
-            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .ai-highlight {
+            color: #F5C518;
+            font-style: italic;
+        }
+
+        [data-theme="dark"] .ai-highlight {
+            color: #FFD700;
+        }
+
+        .site-subtitle {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin: 0.2rem 0 0;
+            animation: heroFadeUp 0.8s ease-out 0.18s both;
         }
 
         .hero-rule {
@@ -706,6 +719,9 @@
     </nav>
 
     <header>
+        <img src="/assets/favicon.png" class="logo" alt="ExplAIn Sims">
+        <h1>Expl<span class="ai-highlight">AI</span>n</h1>
+        <div class="site-subtitle">Sims</div>
         <div class="hero-rule"></div>
         <p>Physics apps, tools, sims, and some random stuff.</p>
     </header>
