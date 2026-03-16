@@ -67,9 +67,6 @@
 <body>
   <!-- Mobile tab bar (visible only on narrow screens) -->
   <div id="mobileTabBar" class="mobile-tab-bar no-print">
-    <a href="https://panphy.github.io/" class="mobile-tab-bar-logo">
-      <img src="/assets/panphy.png" alt="PanPhy logo" />
-    </a>
     <div class="mobile-tab-bar-tabs">
       <button class="mobile-tab active" data-pane="input">Edit</button>
       <button class="mobile-tab" data-pane="output">Preview</button>
@@ -94,13 +91,8 @@
           3) placeholder on the right
       -->
       <div class="pane-heading-container">
-        <!-- Logo Container (Left) -->
-        <div class="logo-container">
-          <!-- Link the logo to PanPhy website -->
-          <a href="https://panphy.github.io/">
-            <img src="/assets/panphy.png" alt="PanPhy logo" />
-          </a>
-        </div>
+        <!-- Placeholder on the Left (keeps grid layout consistent) -->
+        <div class="heading-placeholder"></div>
 
         <!-- The heading in the Center -->
         <h2 class="pane-heading">Markdown Input</h2>
@@ -215,10 +207,6 @@
     </div>
   </div>
 
-  <footer>
-    &copy; <a href="https://panphy.github.io/" target="_blank" rel="noopener noreferrer">PanPhy Labs</a> |
-    <a href="https://buymeacoffee.com/panphy" target="_blank" rel="noopener noreferrer">Support My Projects</a>
-  </footer>
 
   <!-- Main Application Script (ES Module) -->
   <script type="module" src="markdown_editor/js/main.js"></script>

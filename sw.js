@@ -1,5 +1,5 @@
-const BUILD_ID = '2026-03-15T22:30:00Z';
-const CACHE_PREFIX = 'panphy-labs';
+const BUILD_ID = '2026-03-16T00:00:00Z';
+const CACHE_PREFIX = 'site';
 const PRECACHE_NAME = `${CACHE_PREFIX}-precache-${BUILD_ID}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${BUILD_ID}`;
 const CORS_REQUIRED_ASSETS = new Set([

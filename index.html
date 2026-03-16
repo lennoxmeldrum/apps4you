@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script>
     (function() {
-      if (localStorage.getItem('panphy-dark')) {
+      if (localStorage.getItem('theme-dark')) {
         document.documentElement.setAttribute('data-theme', 'dark');
         var tc = document.querySelector('meta[name="theme-color"]');
         var sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
@@ -20,15 +20,15 @@
       }
     })();
     </script>
-    <title>PanPhy Labs | Physics Tools & Simulations</title>
+    <title>Physics Tools & Simulations</title>
     <meta name="description"
-        content="PanPhy Labs is a portfolio of physics tools, simulations, and interactive mini apps.">
-    <meta property="og:title" content="PanPhy Labs">
+        content="A collection of physics tools, simulations, and interactive mini apps.">
+    <meta property="og:title" content="Physics Tools & Simulations">
     <meta property="og:description"
-        content="PanPhy Labs is a portfolio of physics tools, simulations, and interactive mini apps.">
-    <meta name="twitter:title" content="PanPhy Labs">
+        content="A collection of physics tools, simulations, and interactive mini apps.">
+    <meta name="twitter:title" content="Physics Tools & Simulations">
     <meta name="twitter:description"
-        content="PanPhy Labs is a portfolio of physics tools, simulations, and interactive mini apps.">
+        content="A collection of physics tools, simulations, and interactive mini apps.">
 
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -706,8 +706,6 @@
     </nav>
 
     <header>
-        <img src="/assets/panphy.png" alt="PanPhy Logo" class="logo" onerror="this.style.display='none'">
-        <h1>PanPhy Labs</h1>
         <div class="hero-rule"></div>
         <p>Physics apps, tools, sims, and some random stuff.</p>
     </header>
@@ -829,7 +827,7 @@
     <div class="section" id="about" data-section="05">
         <h2>About</h2>
         <p>
-            Welcome to <strong>PanPhy Labs</strong>. The tools, simulations, and games here are built with AI and
+            The tools, simulations, and games here are built with AI and
             designed to be interactive and educational. While there are many great web tools and physics simulations
             online, not all meet my needs. On school-managed devices, students and teachers often don't have the
             admin rights to install software, so I build my own web apps: simple, browser-based, and ready for
@@ -843,12 +841,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 PanPhy Labs</p>
-        <p>
-            <a href="mailto:panphylabs@icloud.com">Contact Me</a>
-            <span class="footer-sep">·</span>
-            <a href="https://buymeacoffee.com/panphy" target="_blank" rel="noopener noreferrer">Support My Projects</a>
-        </p>
+        <p>h/t to <a href="https://panphy.github.io/" target="_blank" rel="noopener noreferrer">PanPhy</a></p>
     </footer>
 
     <script>
@@ -1083,8 +1076,8 @@
     <script>
         // Theme Toggle Functionality
         const themeButton = document.getElementById('theme-button');
-        const DARK_THEME_KEY = "panphy-dark";
-        const LIGHT_THEME_KEY = "panphy-light";
+        const DARK_THEME_KEY = "theme-dark";
+        const LIGHT_THEME_KEY = "theme-light";
 
         const currentTheme = localStorage.getItem(DARK_THEME_KEY) ?
             "dark" :

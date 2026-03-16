@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script>
     (function() {
-      var t = localStorage.getItem('panphyplot-theme');
+      var t = localStorage.getItem('plot-theme');
       var isDark = t === 'dark' || (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
       if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -21,7 +21,7 @@
     })();
     </script>
 
-	<title>PanPhyPlot</title>
+	<title>Plot Data</title>
 	<link rel="icon" type="image/png" href="/assets/favicon.png">
     <script src="/assets/sw-register.js" defer></script>
 <!-- Plotly.js (basic bundle) for graphing -->
@@ -47,20 +47,13 @@
 
 <body>
 	<div class="banner">
-		<!-- Logo on the Left -->
-		<div class="banner-logo">
-			<a href="https://panphy.github.io/">
-				<img src="/assets/panphy.png" alt="PanPhy logo" />
-			</a>
-		</div>
-
 		<!-- Title in the Center -->
-		<div class="banner-title">PanPhyPlot</div>
+		<div class="banner-title">Plot Data</div>
 
 		<!-- Buttons on the Right -->
 		<div class="banner-buttons">
 			<a href="/tools/panphyplot/panphyplot_manual.html" class="banner-button"
-				title="Open the PanPhyPlot manual">Manual</a>
+				title="Open the manual">Manual</a>
 			<div class="theme-toggle">
 				<button id="theme-button" aria-label="Toggle Light/Dark Theme"
 					title="Toggle between light and dark themes">☀️</button>
@@ -502,21 +495,6 @@
 		</div>
 	</div>
 
-	<footer>
-		&copy; <a href="https://panphy.github.io/" target="_blank" rel="noopener noreferrer">PanPhy Labs</a> |
-		<a href="https://buymeacoffee.com/panphy" target="_blank" rel="noopener noreferrer">Support My Projects</a>
-	</footer>
-
-	<!--
-		PanPhyPlot file structure:
-		- /tools/panphyplot/css/panphyplot.css (styles)
-		- /tools/panphyplot/js/state.js (shared state)
-		- /tools/panphyplot/js/latex-rendering.js (LaTeX helpers)
-		- /tools/panphyplot/js/plotting.js (Plotly rendering)
-		- /tools/panphyplot/js/curve-fitting.js (fit logic)
-		- /tools/panphyplot/js/ui.js (UI + table/data handling)
-		- /tools/panphyplot/js/main.js (bootstrap)
-	-->
 		<script src="/tools/panphyplot/js/state.js"></script>
 		<script src="/tools/panphyplot/js/latex-rendering.js"></script>
 		<script src="/tools/panphyplot/js/plotting.js"></script>

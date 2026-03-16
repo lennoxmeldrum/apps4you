@@ -1,7 +1,7 @@
 (() => {
   const BUILD_ID = '2026-02-24T00:20:00Z';
   window.__BUILD_ID__ = BUILD_ID;
-  console.info(`[PanPhy Labs] Build ${BUILD_ID}`);
+  console.info(`Build ${BUILD_ID}`);
 
   if (!('serviceWorker' in navigator)) {
     return;

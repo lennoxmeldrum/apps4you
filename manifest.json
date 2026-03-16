@@ -1,6 +1,6 @@
 {
-  "name": "PanPhy Labs",
-  "short_name": "PanPhy Labs",
+  "name": "Physics Tools & Simulations",
+  "short_name": "Physics Tools",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
